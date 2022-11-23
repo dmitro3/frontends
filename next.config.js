@@ -2,8 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['assets.shrimpy.io'],
-    dangerouslyAllowSVG: true,
+    loader: 'akamai',
+    path: '',
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
