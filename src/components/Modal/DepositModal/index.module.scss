@@ -1,0 +1,103 @@
+
+.index {
+  .button {
+    padding: 10px 8px;
+    width: 150px;
+  }
+
+  .body {
+    margin-top: 20px;
+    .inputContainer {
+      background-color: #212025;
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      .balance {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 14px;
+        color: rgb(158, 158, 158);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        padding-right: 8px;
+
+        div {
+          padding-left: 4px;
+        }
+      }
+      .input {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        height: 50px;
+        input {
+          appearance: none;
+          background-color: #212025;
+          outline: none;
+          border: none;
+          text-align: right;
+          width: 100%;
+          color: #fff;
+          font-size: 30px;
+          &::placeholder {
+            color: #fff;
+          }
+        }
+      }
+
+      .iconPlus {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 32px;
+        width: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #212025;
+        border-radius: 8px;
+        border: 2px solid rgb(158, 158, 158);
+        svg {
+          z-index: 1;
+          fill: rgb(158, 158, 158);
+        }
+      }
+    }
+    .lockTimeContainer {
+      background-color: #212025;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 8px;
+
+      .week {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+
+      .presetContainer {
+        display: flex;
+        margin-top: 24px;
+        justify-content: space-between;
+
+      }
+    }
+
+    .timeResult {
+      margin-top: 16px;
+      display: flex;
+      -webkit-box-pack: justify;
+      justify-content: space-between;
+      box-sizing: border-box;
+      border-radius: 8px;
+      background: transparent;
+      color: rgb(158, 158, 158);
+      width: 100%;
+      line-height: 25px;
+      font-size: 13px;
+      border: 0px solid rgb(230, 220, 213);
+      text-align: center;
+    }
+  }
+}
