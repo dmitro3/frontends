@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import { ButtonBase, Dialog, DialogContent } from '@mui/material';
+import currency from 'currency.js';
 import Image from 'next/image';
-import CurrencyFormat from 'react-currency-format';
 import { useDispatch } from 'react-redux';
 import Badge from 'src/components/Badge';
 import BadgeType from 'src/components/Badge/BadgeType';
@@ -41,7 +41,13 @@ const DepositModal = () => {
               <div className={styles.balance}>
                 <span>Balance: </span>
                 <span className="ml-3">
-                  <CurrencyFormat value="100000000000" displayType="text" thousandSeparator suffix=" MATIC" />
+                  <span>
+                    {currency(100000000000, {
+                      symbol: '',
+                    })
+                      .format()
+                      .toString()}
+                  </span>
                 </span>
               </div>
               <div className={styles.input}>
