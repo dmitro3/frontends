@@ -43,15 +43,15 @@ const Tr = ({ asset }) => {
         {marketPrice.length > 0 && currency(marketPrice[marketPrice.length - 1].price).format()}
       </th>
       <th className="thClass text-right">
-        {marketPrice.length > 0 && currency(marketPrice[marketPrice.length - 1].volume).format()}
+        {marketPrice.length > 0 && currency(asset.balance * marketPrice[marketPrice.length - 1].price).format()}
       </th>
-      <th className="thClass text-right w-5">{asset.weight}%</th>
       <th className="thClass text-right w-5">
-        {currency(asset.amount, {
+        {currency(asset.balance, {
           symbol: '',
-          precision: 0,
+          precision: 6,
         }).format(0)}
       </th>
+      <th className="thClass text-right w-5">{asset.weight}%</th>
 
       <th className="thClass relative">
         <canvas id={asset.symbol} />

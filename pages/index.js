@@ -1,13 +1,10 @@
 import { Box, ButtonBase, Tab, Tabs } from '@mui/material';
 import currency from 'currency.js';
-import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Badge from 'src/components/Badge';
-import BadgeType from 'src/components/Badge/BadgeType';
 import LineBreak from 'src/components/LineBreak';
 import Table from 'src/components/Table';
-import { interactContractUSDC } from 'src/service/connectSM';
+import { interactContractUSDC, usdcSM } from 'src/service/connectSM';
 import { setContractOverview } from 'src/store/contract';
 import { openModal } from 'src/store/modal';
 import ModalTypes from 'src/store/modal/ModalTypes';
@@ -33,6 +30,8 @@ const Automation = () => {
 
   const [value, setValue] = useState(0);
   const [userInfo, setUserInfo] = useState(0);
+  const [fundDecimals, setFundDecimals] = useState(0);
+  const [usdcDecimals, setUSDCDecimal] = useState(0);
 
   const contractOverview = useSelector((state) => state.contract.overview);
   const account = useSelector((state) => state.user);
@@ -43,7 +42,11 @@ const Automation = () => {
   useEffect(() => {
     const fetchInfo = async () => {
       const response = await interactContractUSDC.methods.overview().call();
+      const fundDecimal = await interactContractUSDC.methods.decimals().call();
+      const usdcDecimal = await usdcSM.methods.decimals().call();
 
+      setUSDCDecimal(usdcDecimal);
+      setFundDecimals(fundDecimal);
       dispatch(setContractOverview(response));
     };
 
@@ -125,33 +128,52 @@ const Automation = () => {
             <div className="flex items-center my-3">
               <div className="w-52 text-gray-300 mr-3">Total value:</div>
               <div className=" text-white font-bold">
-                {currency(contractOverview.tokenSupply, {
+                {currency(contractOverview.tokenSupply / 10 ** fundDecimals, {
                   symbol: '',
+                  precision: 6,
                 }).format()}{' '}
-                <span className="text-sm text-gray-400">( {currency(contractOverview.usdValue).format()})</span>
+                <span className="text-sm text-gray-400">
+                  ({' '}
+                  {currency(contractOverview.usdValue / 10 ** usdcDecimals, {
+                    precision: 6,
+                  }).format()}
+                  )
+                </span>
               </div>
             </div>
           </div>
-          <LineBreak />
-          <div>
-            <div className=" text-white mb-3 font-bold">Your Locked</div>
+          {account.address && (
+            <>
+              <LineBreak />
+              <div>
+                <div className=" text-white mb-3 font-bold">Your Locked</div>
 
-            <div className="flex items-center my-3">
-              <div className="w-52 text-gray-300 mr-3">Total value:</div>
-              <div className=" text-white font-bold">
-                {currency(userInfo.tokenBalance, {
-                  symbol: '',
-                }).format()}{' '}
-                <span className="text-sm text-gray-400">( {currency(userInfo.usdValue).format()})</span>
-              </div>
-            </div>
-            {/* <div className="flex items-center my-3">
+                <div className="flex items-center my-3">
+                  <div className="w-52 text-gray-300 mr-3">Total value:</div>
+                  <div className=" text-white font-bold">
+                    {currency(userInfo.tokenBalance / 10 ** fundDecimals, {
+                      symbol: '',
+                      precision: 6,
+                    }).format()}{' '}
+                    <span className="text-sm text-gray-400">
+                      ({' '}
+                      {currency(userInfo.usdValue / 10 ** usdcDecimals, {
+                        precision: 6,
+                      }).format()}
+                      )
+                    </span>
+                  </div>
+                </div>
+                {/* <div className="flex items-center my-3">
               <div className="w-52 text-gray-300 mr-3">ROI:</div>
               <div className=" text-white font-bold">
                 <Badge type={BadgeType.SUCCESS}>{percent}%</Badge>
               </div>
             </div> */}
-          </div>
+              </div>
+            </>
+          )}
+
           <LineBreak />
 
           <div className="flex justify-end">
@@ -162,12 +184,12 @@ const Automation = () => {
             >
               Withdraw
             </ButtonBase>
-            <ButtonBase
+            {/* <ButtonBase
               component="button"
               className="relative text-white bg-main-100 hover:bg-main-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3"
             >
               Extend more
-            </ButtonBase>
+            </ButtonBase> */}
             <ButtonBase
               onClick={handleDeposit}
               component="button"
