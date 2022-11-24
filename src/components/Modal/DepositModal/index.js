@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { ButtonBase, Dialog, DialogContent } from '@mui/material';
 import currency from 'currency.js';
 import Image from 'next/image';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Badge from 'src/components/Badge';
 import BadgeType from 'src/components/Badge/BadgeType';
 import CloseModalIcon from 'src/components/Icon/CloseModalIcon';
@@ -15,7 +15,9 @@ import styles from './index.module.scss';
 
 const DepositModal = () => {
   const dispatch = useDispatch();
-
+  const { address, balance } = useSelector((state) => state.user);
+  console.log('balance:', balance);
+  console.log('address:', address);
   const onClose = () => {
     dispatch(closeModal());
   };
@@ -100,7 +102,7 @@ const DepositModal = () => {
               component="button"
               size="small"
               className="w-full bg-main-100 rounded py-2 font-bold my-2"
-              onClick={() => {}}
+              onClick={() => { }}
             >
               Deposit
             </ButtonBase>

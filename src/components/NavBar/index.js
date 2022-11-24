@@ -1,9 +1,12 @@
 import { ButtonBase, Stack } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { accountUser } from 'src/store/userInfo';
 import Web3 from 'web3';
 
 const NavBar = () => {
+  const dispatch = useDispatch();
   const [userInfor, setUserInfor] = useState({
     account: '',
     balance: null,
@@ -14,6 +17,7 @@ const NavBar = () => {
       const userAccount = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const account = `${userAccount[0].slice(0, 5)}...${userAccount[0].slice(-4)}`;
       const balance = (await web3.eth.getBalance(userAccount[0])) / 10 ** 18;
+      dispatch(accountUser({ account, balance }));
       setUserInfor({
         ...userInfor,
         account,
