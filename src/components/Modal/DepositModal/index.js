@@ -15,9 +15,7 @@ import styles from './index.module.scss';
 
 const DepositModal = () => {
   const dispatch = useDispatch();
-  const { address, balance } = useSelector((state) => state.user);
-  console.log('balance:', balance);
-  console.log('address:', address);
+  const { balance } = useSelector((state) => state.user);
   const onClose = () => {
     dispatch(closeModal());
   };
@@ -44,7 +42,7 @@ const DepositModal = () => {
                 <span>Balance: </span>
                 <span className="ml-3">
                   <span>
-                    {currency(100000000000, {
+                    {currency(balance, {
                       symbol: '',
                     })
                       .format()
