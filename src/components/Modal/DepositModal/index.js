@@ -55,18 +55,11 @@ const DepositModal = () => {
               </div>
             </div>
 
-            <div className={styles.timeResult}>
-              <span>Unlock time</span>
-              <span>
-                <b>12/15/2022, 7:00:00 AM</b>
-              </span>
-            </div>
-
             <ButtonBase
               component="button"
               size="small"
-              className="w-full bg-main-100 rounded py-2 font-bold my-2"
-              onClick={() => { }}
+              className="w-full bg-main-100 rounded py-2 font-bold mt-6"
+              onClick={() => {}}
             >
               Unlock
             </ButtonBase>
