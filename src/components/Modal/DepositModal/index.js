@@ -1,10 +1,7 @@
-import AddIcon from '@mui/icons-material/Add';
 import { ButtonBase, Dialog, DialogContent } from '@mui/material';
 import currency from 'currency.js';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
-import Badge from 'src/components/Badge';
-import BadgeType from 'src/components/Badge/BadgeType';
 import CloseModalIcon from 'src/components/Icon/CloseModalIcon';
 import ViewHistoryIcon from 'src/components/Icon/ViewHistoryIcon';
 import { closeModal, openModal } from 'src/store/modal';
@@ -52,40 +49,9 @@ const DepositModal = () => {
               </div>
               <div className={styles.input}>
                 <div className={styles.logo}>
-                  <Image src="/polygon-matic-logo.png" width="40" height="40" alt="Matic logo" />
+                  <Image src="/usdc-logo.png" width="40" height="40" alt="Matic logo" />
                 </div>
                 <input inputMode="decimal" placeholder="0.0" />
-              </div>
-              <div className={styles.iconPlus}>
-                <AddIcon fontSize="small" />
-              </div>
-            </div>
-            <div className={styles.lockTimeContainer}>
-              <div className={styles.week}>
-                <span>1 week</span>
-              </div>
-              <input
-                id="small-range"
-                type="range"
-                min="0"
-                max="100"
-                value="50"
-                className="w-full h-1 mb-6 rounded-lg appearance-none cursor-pointer range-sm bg-gray-700"
-              />
-
-              <div className={styles.presetContainer}>
-                <ButtonBase>
-                  <Badge type={BadgeType.PURPLE}>2 week </Badge>
-                </ButtonBase>
-                <ButtonBase>
-                  <Badge type={BadgeType.PURPLE}>1 months </Badge>
-                </ButtonBase>
-                <ButtonBase>
-                  <Badge type={BadgeType.PURPLE}>3 months </Badge>
-                </ButtonBase>
-                <ButtonBase>
-                  <Badge type={BadgeType.PURPLE}>6 months </Badge>
-                </ButtonBase>
               </div>
             </div>
 
@@ -102,7 +68,7 @@ const DepositModal = () => {
               className="w-full bg-main-100 rounded py-2 font-bold my-2"
               onClick={() => { }}
             >
-              Deposit
+              Unlock
             </ButtonBase>
           </div>
         </div>

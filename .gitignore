@@ -10,10 +10,13 @@ yarn.lock
 
 # next.js
 /.next/
-/out/
+
 
 # production
 /build
+/out
+/.next
+dist
 
 # misc
 .DS_Store
