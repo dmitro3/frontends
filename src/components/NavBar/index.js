@@ -1,24 +1,37 @@
 import { ButtonBase, Stack } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { interactContractUSDC } from 'src/service/connectSM';
+import { accountUser } from 'src/store/userInfo';
 import Web3 from 'web3';
 
 const NavBar = () => {
+  const dispatch = useDispatch();
   const [userInfor, setUserInfor] = useState({
     account: '',
     balance: null,
   });
   const connectWallet = async () => {
     if (typeof window !== 'undefined') {
-      const web3 = new Web3(window.ethereum);
-      const userAccount = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const account = `${userAccount[0].slice(0, 5)}...${userAccount[0].slice(-4)}`;
-      const balance = (await web3.eth.getBalance(userAccount[0])) / 10 ** 18;
-      setUserInfor({
-        ...userInfor,
-        account,
-        balance,
-      });
+      try {
+        const web3 = new Web3(window.ethereum);
+        const userAccount = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = `${userAccount[0].slice(0, 5)}...${userAccount[0].slice(-4)}`;
+        console.log('interactContractUSDC:', interactContractUSDC);
+        console.log('userAccount:', typeof userAccount[0]);
+        const userInfor123 = await interactContractUSDC.methods.overview().call();
+        console.log('userInfor123:', userInfor123);
+        const balance = (await web3.eth.getBalance(userAccount[0])) / 10 ** 18;
+        dispatch(accountUser({ account, balance }));
+        setUserInfor({
+          ...userInfor,
+          account,
+          balance,
+        });
+      } catch (error) {
+        console.log('error:', error);
+      }
     }
   };
   return (

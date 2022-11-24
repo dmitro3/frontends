@@ -1,7 +1,7 @@
 import { ButtonBase, Dialog, DialogContent } from '@mui/material';
 import currency from 'currency.js';
 import Image from 'next/image';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CloseModalIcon from 'src/components/Icon/CloseModalIcon';
 import ViewHistoryIcon from 'src/components/Icon/ViewHistoryIcon';
 import { closeModal, openModal } from 'src/store/modal';
@@ -12,7 +12,7 @@ import styles from './index.module.scss';
 
 const DepositModal = () => {
   const dispatch = useDispatch();
-
+  const { balance } = useSelector((state) => state.user);
   const onClose = () => {
     dispatch(closeModal());
   };
@@ -39,7 +39,7 @@ const DepositModal = () => {
                 <span>Balance: </span>
                 <span className="ml-3">
                   <span>
-                    {currency(100000000000, {
+                    {currency(balance, {
                       symbol: '',
                     })
                       .format()

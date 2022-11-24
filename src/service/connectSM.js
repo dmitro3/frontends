@@ -1,9 +1,9 @@
 import Web3 from 'web3';
 
-import smartContractABI from './abi.json';
+import polygon from './polygon.json';
 
-const smAddress = '0x4F6b90DEFBAF8ef800e5E2709fD431759FEFafc6';
+const smAddress = '0xa7697fc2655ffBe5b0B0e2102C11845bF9A6B49a';
 
-const web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545/');
-const interactContract = new web3.eth.Contract(smartContractABI, smAddress);
-export { smAddress, interactContract };
+const web3 = new Web3('https://polygon-rpc.com');
+const interactContractUSDC = new web3.eth.Contract(polygon, smAddress);
+export { smAddress, interactContractUSDC };
