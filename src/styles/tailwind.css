@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.thClass {
+    @apply py-4 px-6 font-medium  whitespace-nowrap text-white
+}
+
+canvas{
+    width: 150px  !important;
+    height: 80px !important;
+    border: 0 !important
+}
