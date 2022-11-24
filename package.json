@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "tailwind": "npx tailwindcss -i ./src/styles/tailwind.css -o ./public/styles/tailwind.css",
+    "tailwind": "npx tailwindcss -i ./src/styles/tailwind.css -o ./public/styles/tailwind.css --watch",
     "deploy": "next build && next export"
   },
   "dependencies": {
