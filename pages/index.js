@@ -1,10 +1,14 @@
 import { Box, ButtonBase, Tab, Tabs } from '@mui/material';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import currency from 'currency.js';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Badge from 'src/components/Badge';
 import BadgeType from 'src/components/Badge/BadgeType';
 import LineBreak from 'src/components/LineBreak';
 import Table from 'src/components/Table';
+import { interactContractUSDC } from 'src/service/connectSM';
+import { setContractOverview } from 'src/store/contract';
 import { openModal } from 'src/store/modal';
 import ModalTypes from 'src/store/modal/ModalTypes';
 
@@ -28,6 +32,33 @@ const Automation = () => {
   const dispatch = useDispatch();
 
   const [value, setValue] = useState(0);
+  const [userInfo, setUserInfo] = useState(0);
+
+  const contractOverview = useSelector((state) => state.contract.overview);
+  const account = useSelector((state) => state.user);
+
+  // ((usdvValue / tokenBalce ) - 1) * 100 < 0 -> đỏ
+  // ((usdvValue / tokenBalce ) - 1) * 100 > 0 -> green
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const response = await interactContractUSDC.methods.overview().call();
+
+      dispatch(setContractOverview(response));
+    };
+
+    fetchInfo();
+  }, []);
+
+  useEffect(() => {
+    if (!account.address) return;
+    const fetchUserInfo = async () => {
+      const response = await interactContractUSDC.methods.userInfo(account.address).call();
+      setUserInfo(response);
+    };
+
+    fetchUserInfo();
+  }, [account.address]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -48,10 +79,18 @@ const Automation = () => {
       }),
     );
   };
+
+  // const percent =
+  //   !_.isEmpty(userInfo) && parseFloat(userInfo.usdValue !== 0 && userInfo.tokenBalance !== 0
+  //     ? parseFloat(userInfo.usdValue) / parseFloat(userInfo.tokenBalance) - 1
+  //     : 0;
+
+  // const isGreen = !_.isEmpty(userInfo) ? percent > 0 : false;
+
   return (
     <div className="flex gap-4">
       <div className="w-2/12">
-        <div className="block mb-2 text-lg text-white">Pool Available</div>
+        <div className="block mb-2 text-lg text-white">Active Pools</div>
         <Tabs
           orientation="vertical"
           centered={false}
@@ -61,8 +100,7 @@ const Automation = () => {
           aria-label="Vertical tabs example"
           sx={{ borderRight: 1, borderColor: 'divider' }}
         >
-          <Tab label="First Pool" />
-          <Tab label="Second Pool" />
+          <Tab label={contractOverview.fundName} />
         </Tabs>
       </div>
       <div className="w-10/12">
@@ -86,34 +124,11 @@ const Automation = () => {
 
             <div className="flex items-center my-3">
               <div className="w-52 text-gray-300 mr-3">Total value:</div>
-              <div className=" text-white font-bold">100,000,000$</div>
-            </div>
-            <div className="flex items-center my-3">
-              <div className="w-52 text-gray-300 mr-3">Unrealized PNL today:</div>
               <div className=" text-white font-bold">
-                <Badge type={BadgeType.SUCCESS}>+100,000,000$</Badge>
-              </div>
-            </div>
-
-            <div className="flex items-center my-3">
-              <div className="w-52 text-gray-300 mr-3">Start Open Fund At: </div>
-              <div className=" text-white font-bold">
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">
-                  <svg
-                    aria-hidden="true"
-                    className="mr-1 w-3 h-3"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  19/11/2022
-                </span>
+                {currency(contractOverview.tokenSupply, {
+                  symbol: '',
+                }).format()}{' '}
+                <span className="text-sm text-gray-400">( {currency(contractOverview.usdValue).format()})</span>
               </div>
             </div>
           </div>
@@ -123,36 +138,19 @@ const Automation = () => {
 
             <div className="flex items-center my-3">
               <div className="w-52 text-gray-300 mr-3">Total value:</div>
-              <div className=" text-white font-bold">100,000,000$</div>
-            </div>
-            <div className="flex items-center my-3">
-              <div className="w-52 text-gray-300 mr-3">Unrealized PNL today:</div>
               <div className=" text-white font-bold">
-                <Badge type={BadgeType.SUCCESS}>+100,000,000$</Badge>
+                {currency(userInfo.tokenBalance, {
+                  symbol: '',
+                }).format()}{' '}
+                <span className="text-sm text-gray-400">( {currency(userInfo.usdValue).format()})</span>
               </div>
             </div>
-
-            <div className="flex items-center my-3">
-              <div className="w-52 text-gray-300 mr-3">Start Lock At: </div>
+            {/* <div className="flex items-center my-3">
+              <div className="w-52 text-gray-300 mr-3">ROI:</div>
               <div className=" text-white font-bold">
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">
-                  <svg
-                    aria-hidden="true"
-                    className="mr-1 w-3 h-3"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  19/11/2022
-                </span>
+                <Badge type={BadgeType.SUCCESS}>{percent}%</Badge>
               </div>
-            </div>
+            </div> */}
           </div>
           <LineBreak />
 
