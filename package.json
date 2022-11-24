@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "tailwind": "npx tailwindcss -i ./src/styles/tailwind.css -o ./public/styles/tailwind.css"
+    "tailwind": "npx tailwindcss -i ./src/styles/tailwind.css -o ./public/styles/tailwind.css --watch",
+    "tailwind:build": "npx tailwindcss -i ./src/styles/tailwind.css -o ./public/styles/tailwind.css",
+    "deploy": "npm run tailwind:build && next build && next export"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -20,7 +22,7 @@
     "currency.js": "^2.0.4",
     "dayjs": "^1.11.6",
     "eslint-config-next": "13.0.4",
-    "next": "13.0.4",
+    "next": "^13.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-redux": "^8.0.5",
