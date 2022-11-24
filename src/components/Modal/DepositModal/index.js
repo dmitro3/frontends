@@ -43,7 +43,8 @@ const DepositModal = () => {
                       symbol: '',
                     })
                       .format()
-                      .toString()}
+                      .toString()}{' '}
+                    USDC
                   </span>
                 </span>
               </div>

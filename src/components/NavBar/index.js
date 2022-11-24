@@ -2,7 +2,7 @@ import { ButtonBase, Stack } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { interactContractUSDC } from 'src/service/connectSM';
+import { usdcSM } from 'src/service/connectSM';
 import { accountUser } from 'src/store/userInfo';
 import Web3 from 'web3';
 
@@ -18,12 +18,9 @@ const NavBar = () => {
         const web3 = new Web3(window.ethereum);
         const userAccount = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const account = `${userAccount[0].slice(0, 5)}...${userAccount[0].slice(-4)}`;
-        console.log('interactContractUSDC:', interactContractUSDC);
-        console.log('userAccount:', typeof userAccount[0]);
-        const userInfor123 = await interactContractUSDC.methods.overview().call();
-        console.log('userInfor123:', userInfor123);
+        const usdcBalance = (await usdcSM.methods.balanceOf(userAccount[0]).call()) / 10 ** 6;
         const balance = (await web3.eth.getBalance(userAccount[0])) / 10 ** 18;
-        dispatch(accountUser({ account, balance }));
+        dispatch(accountUser({ account, balance: usdcBalance }));
         setUserInfor({
           ...userInfor,
           account,
@@ -43,7 +40,7 @@ const NavBar = () => {
         {userInfor.account ? (
           <Stack direction="row" spacing={2}>
             <p style={{ color: '#fff' }}>{userInfor.account}</p>
-            <p style={{ color: '#fff' }}>{`${userInfor.balance} MATIC`}</p>
+            {/* <p style={{ color: '#fff' }}>{`${userInfor.balance} MATIC`}</p> */}
           </Stack>
         ) : (
           <ButtonBase
