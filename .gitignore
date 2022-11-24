@@ -14,6 +14,9 @@ yarn.lock
 
 # production
 /build
+/out
+/.next
+dist
 
 # misc
 .DS_Store

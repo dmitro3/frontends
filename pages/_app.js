@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }) {
         <ThemeProvider theme={theme}>
           <GlobalModal />
           <NavBar />
-          <div className="flex bg-gray-800">
+          <div className="flex bg-gray-800 min-h-screen">
             <div className="p-6 w-full container mx-auto">
               <Component {...pageProps} />
             </div>
