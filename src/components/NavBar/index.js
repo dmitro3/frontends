@@ -20,7 +20,7 @@ const NavBar = () => {
         const account = `${userAccount[0].slice(0, 5)}...${userAccount[0].slice(-4)}`;
         const usdcBalance = (await usdcSM.methods.balanceOf(userAccount[0]).call()) / 10 ** 6;
         const balance = (await web3.eth.getBalance(userAccount[0])) / 10 ** 18;
-        dispatch(accountUser({ account, balance: usdcBalance }));
+        dispatch(accountUser({ account: userAccount[0], balance: usdcBalance }));
         setUserInfor({
           ...userInfor,
           account,

@@ -76,6 +76,7 @@ export async function printChart(times, prices, id) {
           },
           grid: {
             display: false,
+            borderColor: 'red',
           },
         },
         y: {
@@ -84,6 +85,8 @@ export async function printChart(times, prices, id) {
           },
           grid: {
             display: false,
+            drawBorder: false,
+            borderColor: 'red',
           },
         },
       },
