@@ -14,7 +14,6 @@ yarn.lock
 
 # production
 /build
-/out
 /.next
 dist
 
