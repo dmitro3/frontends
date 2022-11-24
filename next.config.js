@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // images: {
-  //   loader: 'akamai',
-  //   path: '',
-  // },
+  images: {
+    loader: 'akamai',
+    path: '',
+    unoptimized: true,
+  },
+
   trailingSlash: true,
   eslint: {
     // Warning: This allows production builds to successfully complete even if
