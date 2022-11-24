@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "tailwind": "npx tailwindcss -i ./src/styles/tailwind.css -o ./public/styles/tailwind.css --watch",
-    "deploy": "next build && next export"
+    "tailwind:build": "npx tailwindcss -i ./src/styles/tailwind.css -o ./public/styles/tailwind.css",
+    "deploy": "npm run tailwind:build && next build && next export"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
