@@ -45,7 +45,7 @@ const Table = ({ contractOverview }) => {
                 isNumber: true,
               },
               {
-                name: 'Weight in Pool',
+                name: 'Weight',
                 isNumber: true,
               },
               {

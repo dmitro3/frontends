@@ -11,10 +11,28 @@ const signer =
   typeof window !== 'undefined'
     ? new ethers.providers.Web3Provider(window.ethereum).getSigner()
     : new ethers.providers.getDefaultProvider();
+export const ContractAddress = [
+  '0x5799fFCd4F51ebd9a84259296b072467FedB25d5', // polygon
+  '0x6AFa41b6266430DAefec207B767C0C7083382bc4', // defi
+  '0xAd76a0cCdc3862C5053b56d577c687ba61D93FF5', // web3
+];
+
 export const contracts = [
-  new ethers.Contract('0x5799fFCd4F51ebd9a84259296b072467FedB25d5', polygon.abi, signer),
-  new ethers.Contract('0x6AFa41b6266430DAefec207B767C0C7083382bc4', polygon.abi, signer),
-  new ethers.Contract('0xAd76a0cCdc3862C5053b56d577c687ba61D93FF5', polygon.abi, signer),
+  {
+    instance: new ethers.Contract(ContractAddress[0], polygon.abi, signer),
+    governor: '0x5799fFCd4F51ebd9a84259296b072467FedB25d5',
+    order: 1,
+  },
+  {
+    instance: new ethers.Contract(ContractAddress[1], polygon.abi, signer),
+    governor: '0x5D82E3179A9a5DEb09ddAf4e0518ECb458ec5B56',
+    order: 2,
+  },
+  {
+    instance: new ethers.Contract(ContractAddress[2], polygon.abi, signer),
+    governor: '0xAd76a0cCdc3862C5053b56d577c687ba61D93FF5',
+    order: 2,
+  },
 ];
 const usdcSM = new web3.eth.Contract(usdc, usdcAddress);
 
@@ -31,16 +49,10 @@ export const toSzabo = (n) => (n * 10 ** 6).toLocaleString('fullwide', { useGrou
 
 export const fromSzabo = (n) => (n / 10 ** 6).toLocaleString('fullwide', { useGrouping: false });
 
-export const getAllowance = async (address) => {
-  const balance = await usdcSM.methods.allowance(address, usdcAddress).call();
+export const getAllowance = async (owner, spender) => {
+  const balance = await usdcSM.methods.allowance(owner, spender).call();
 
   return ethers.BigNumber.from(balance);
-};
-
-export const isEnoughAllowance = async (address, needAmount) => {
-  const amount = await getAllowance(address);
-
-  return ethers.BigNumber.from(amount).gte(ethers.BigNumber.from(needAmount));
 };
 
 export const approveUSDCToken = async (address, amount) => {

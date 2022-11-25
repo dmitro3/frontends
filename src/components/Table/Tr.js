@@ -14,7 +14,7 @@ const Tr = ({ asset }) => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-      axios.get(`https://api-v2.blockpour.com/api/prices/average/hourly/${asset.symbol}?days=1`).then((response) => {
+      axios.get(`https://api-v2.blockpour.com/api/prices/average/hourly/${asset.symbol}`).then((response) => {
         const responseFormatted = response.data.data;
         setMarketPrice(responseFormatted);
         setPrices(responseFormatted.map((rs) => parseFloat(rs.price)));

@@ -9,11 +9,12 @@ import axios from 'axios';
 import classNames from 'classnames';
 import currency from 'currency.js';
 import { ethers } from 'ethers';
+import _, { debounce } from 'lodash';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { approveUSDCToken, contracts, deposit, smAddress, toSzabo } from 'src/service/connectSM';
+import { approveUSDCToken, contracts, deposit, getAllowance, toSzabo } from 'src/service/connectSM';
 import { fetchOverview, fetchUserInfo } from 'src/store/contract';
 import { fetchUser } from 'src/store/userInfo';
 
@@ -38,6 +39,26 @@ const DepositComponent = () => {
     amount: parseInt((toSzabo(value) * parseInt(ethers.BigNumber.from(e.weight).toString(), 10)) / 100, 10),
   }));
 
+  useEffect(() => {
+    if (value !== '') {
+      verify(value);
+    }
+  }, [value]);
+
+  const verify = useCallback(
+    debounce(async (newValue) => {
+      setLoading(true);
+      const allowance = await getAllowance(account.address, selectedAddress);
+      if (allowance.gte(ethers.BigNumber.from(toSzabo(newValue)))) {
+        setStep(2);
+      } else {
+        setStep(1);
+      }
+      setLoading(false);
+    }, 1000),
+    [account, selectedAddress],
+  );
+
   const handleDeposit = async () => {
     try {
       setLoading(true);
@@ -55,6 +76,8 @@ const DepositComponent = () => {
 
       reset();
     } catch (error) {
+      toast.error('Operation unsuccessfully');
+
       //
     } finally {
       setLoading(false);
@@ -67,7 +90,7 @@ const DepositComponent = () => {
       await approveUSDCToken(selectedAddress, value);
       setStep(2);
     } catch (error) {
-      //
+      toast.error('Operation unsuccessfully');
     } finally {
       setLoading(false);
     }
@@ -76,10 +99,13 @@ const DepositComponent = () => {
   async function reset() {
     setStep(1);
     setValue('');
-    contracts.forEach((contract) => {
-      dispatch(fetchOverview(contract));
-      dispatch(fetchUserInfo(contract));
-    });
+
+    setTimeout(() => {
+      contracts.forEach((contract) => {
+        dispatch(fetchOverview({ instance: contract.instance, governor: contract.governor, order: contract.order }));
+        dispatch(fetchUserInfo(contract.instance));
+      });
+    }, 3000);
 
     dispatch(fetchUser());
 
@@ -112,7 +138,14 @@ const DepositComponent = () => {
             <div className={styles.logo}>
               <Image src="/usdc-logo.png" width="40" height="40" alt="Matic logo" />
             </div>
-            <input value={value} onChange={(e) => setValue(e.target.value)} inputMode="decimal" placeholder="0.0" />
+            <input
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+              inputMode="decimal"
+              placeholder="0.0"
+            />
             <Button onClick={useMax} size="small" className="absolute right-0">
               Max
             </Button>
@@ -122,6 +155,7 @@ const DepositComponent = () => {
           <LoadingButton
             component="button"
             size="small"
+            disabled={isLoading || step !== 1 || !value}
             loading={isLoading && step === 1}
             className={classNames(
               'w-full text-white rounded py-2 font-bold mt-6',
@@ -139,6 +173,7 @@ const DepositComponent = () => {
           <LoadingButton
             component="button"
             size="small"
+            disabled={isLoading || step !== 2 || !value}
             loading={isLoading && step === 2}
             className={classNames(
               'w-full text-white rounded py-2 font-bold mt-6',
