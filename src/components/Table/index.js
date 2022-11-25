@@ -17,7 +17,7 @@ const Table = () => {
           symbol: TokenMaps[asset.token].symbol,
           logo: TokenMaps[asset.token].logo,
           name: TokenMaps[asset.token].name,
-          amount: asset.amount,
+          balance: asset.amount / 10 ** TokenMaps[asset.token].decimal,
           token: asset.token,
           weight: asset.weight,
         })),
@@ -39,15 +39,15 @@ const Table = () => {
                 isNumber: true,
               },
               {
-                name: 'Volume',
+                name: 'Value',
+                isNumber: true,
+              },
+              {
+                name: 'Balance',
                 isNumber: true,
               },
               {
                 name: 'Weight in Pool',
-                isNumber: true,
-              },
-              {
-                name: 'Total Pool Holds',
                 isNumber: true,
               },
               {

@@ -3,9 +3,7 @@ import currency from 'currency.js';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import CloseModalIcon from 'src/components/Icon/CloseModalIcon';
-import ViewHistoryIcon from 'src/components/Icon/ViewHistoryIcon';
-import { closeModal, openModal } from 'src/store/modal';
-import ModalTypes from 'src/store/modal/ModalTypes';
+import { closeModal } from 'src/store/modal';
 
 import Transition from '../Transition';
 import styles from './index.module.scss';
@@ -13,25 +11,17 @@ import styles from './index.module.scss';
 const DepositModal = () => {
   const dispatch = useDispatch();
   const { balance } = useSelector((state) => state.user);
+  const contractOverview = useSelector((state) => state.contract.overview);
+
   const onClose = () => {
     dispatch(closeModal());
   };
 
-  const showHistory = () => {
-    dispatch(closeModal());
-    dispatch(
-      openModal({
-        modalType: ModalTypes.HISTORY_MODAL,
-      }),
-    );
-  };
-
   return (
-    <Dialog open TransitionComponent={Transition} onClose={onClose} maxWidth="lg">
+    <Dialog open TransitionComponent={Transition} onClose={() => {}} maxWidth="lg">
       <DialogContent>
-        <ViewHistoryIcon onClick={showHistory} />
         <CloseModalIcon onClick={onClose} />
-        <div className="p-3 text-center mb-3 text-xl">Deposit to GameFi Pool</div>
+        <div className="p-3 text-center mb-3 text-xl">Deposit to {contractOverview.fundName}</div>
         <div className={styles.index}>
           <div className={styles.body}>
             <div className={styles.inputContainer}>

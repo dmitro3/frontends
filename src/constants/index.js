@@ -4,27 +4,32 @@ export const TokenMaps = {
     logo: '/btc-logo.png',
     name: 'Bitcoin',
     symbol: 'BTC',
+    decimal: 8,
   },
   '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619': {
     logo: '/eth-logo.png',
     name: 'Ethereum',
     symbol: 'ETH',
+    decimal: 18,
   },
   '0x2C89bbc92BD86F8075d1DEcc58C7F4E0107f286b': {
     logo: '/avalanche-avax-logo.png',
     name: 'Avalanche',
     symbol: 'AVAX',
+    decimal: 18,
   },
 
   '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270': {
     logo: '/matic-logo.png',
     name: 'Matic',
     symbol: 'MATIC',
+    decimal: 18,
   },
 
   '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': {
     logo: '/usdc-logo.png',
     name: 'USDC',
     symbol: 'USDC',
+    decimal: 6,
   },
 };
