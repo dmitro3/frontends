@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { contracts } from 'src/service/connectSM';
 
 const initialState = {
   overview: {},
@@ -10,10 +9,12 @@ const initialState = {
 };
 
 // First, create the thunk
-export const fetchOverview = createAsyncThunk('fetchOverview', async (contract) => {
-  const response = await contract.overview();
+export const fetchOverview = createAsyncThunk('fetchOverview', async ({ instance, governor, order }) => {
+  const response = await instance.overview();
   return {
-    contractAddress: contract.address,
+    contractAddress: instance.address,
+    governor,
+    order,
     ...response,
   };
 });
@@ -35,20 +36,15 @@ export const fetchBaseToken = createAsyncThunk('fetchBaseToken', async (contract
   };
 });
 
-export const setSelectedAddress = createAsyncThunk('setSelectedAddress', async (index) => {
-  const address = await contracts[index].address;
-  return address;
-});
-
 export const userInfoSlice = createSlice({
   name: 'contract',
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(setSelectedAddress.fulfilled, (state, action) => {
-      // Add user to the state array
+  reducers: {
+    setSelectedAddress: (state, action) => {
       state.selectedAddress = action.payload;
-    });
+    },
+  },
+  extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
     builder.addCase(fetchOverview.fulfilled, (state, action) => {
       // Add user to the state array
@@ -83,6 +79,6 @@ export const userInfoSlice = createSlice({
   },
 });
 
-export const { setBaseToken } = userInfoSlice.actions;
+export const { setSelectedAddress } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;

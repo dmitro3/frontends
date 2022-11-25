@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { contracts, fromSzabo, fromWei, toWei, withdraw } from 'src/service/connectSM';
+import { contracts, fromWei, toWei, withdraw } from 'src/service/connectSM';
 import { fetchOverview, fetchUserInfo } from 'src/store/contract';
 import { fetchUser } from 'src/store/userInfo';
 
@@ -26,11 +26,13 @@ const WithdrawComponent = () => {
 
   async function reset() {
     setValue('');
+    setTimeout(() => {
+      contracts.forEach((contract) => {
+        dispatch(fetchOverview({ instance: contract.instance, governor: contract.governor, order: contract.order }));
+        dispatch(fetchUserInfo(contract.instance));
+      });
+    }, 3000);
 
-    contracts.forEach((contract) => {
-      dispatch(fetchOverview(contract));
-      dispatch(fetchUserInfo(contract));
-    });
     dispatch(fetchUser());
 
     toast.success('Withdraw Successfully');
@@ -46,7 +48,7 @@ const WithdrawComponent = () => {
 
       reset();
     } catch (error) {
-      //
+      toast.error('Operation unsuccessfully');
     } finally {
       setLoading(false);
     }
