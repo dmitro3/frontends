@@ -32,10 +32,12 @@
         align-items: center;
         padding: 12px;
         height: 50px;
+        position: relative;
         input {
           appearance: none;
           background-color: #212025;
           outline: none;
+          padding-right: 65px;
           border: none;
           text-align: right;
           width: 100%;

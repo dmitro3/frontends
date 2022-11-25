@@ -8,9 +8,6 @@ const ViewHistoryIcon = ({ onClick }) => {
         aria-label="close"
         onClick={onClick}
         sx={{
-          position: 'absolute',
-          left: 8,
-          top: 8,
           cursor: 'pointer',
         }}
       >

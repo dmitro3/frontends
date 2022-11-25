@@ -1,13 +1,18 @@
-import { Box, ButtonBase, Tab, Tabs } from '@mui/material';
+import { Box, ButtonBase, Tab, Tabs, Tooltip } from '@mui/material';
 import currency from 'currency.js';
+import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ViewHistoryIcon from 'src/components/Icon/ViewHistoryIcon';
 import LineBreak from 'src/components/LineBreak';
+import DepositComponent from 'src/components/Modal/DepositModal/DepositComponent';
+import WithdrawComponent from 'src/components/Modal/WithdrawModal/WithdrawComponent';
 import Table from 'src/components/Table';
-import { interactContractUSDC, usdcSM } from 'src/service/connectSM';
-import { setContractOverview } from 'src/store/contract';
+import { contracts, fromSzabo, fromWei } from 'src/service/connectSM';
+import { fetchBaseToken, fetchOverview, fetchUserInfo, setBaseToken, setSelectedAddress } from 'src/store/contract';
 import { openModal } from 'src/store/modal';
 import ModalTypes from 'src/store/modal/ModalTypes';
+import { fetchUser } from 'src/store/userInfo';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -29,181 +34,181 @@ const Automation = () => {
   const dispatch = useDispatch();
 
   const [value, setValue] = useState(0);
-  const [userInfo, setUserInfo] = useState(0);
-  const [fundDecimals, setFundDecimals] = useState(0);
-  const [usdcDecimals, setUSDCDecimal] = useState(0);
 
-  const contractOverview = useSelector((state) => state.contract.overview);
+  const contractOverviews = useSelector((state) => state.contract.overview);
+  const userInfo = useSelector((state) => state.contract.userInfo);
   const account = useSelector((state) => state.user);
-
-  // ((usdvValue / tokenBalce ) - 1) * 100 < 0 -> đỏ
-  // ((usdvValue / tokenBalce ) - 1) * 100 > 0 -> green
 
   useEffect(() => {
     const fetchInfo = async () => {
-      const response = await interactContractUSDC.methods.overview().call();
-      const fundDecimal = await interactContractUSDC.methods.decimals().call();
-      const usdcDecimal = await usdcSM.methods.decimals().call();
-
-      setUSDCDecimal(usdcDecimal);
-      setFundDecimals(fundDecimal);
-      dispatch(setContractOverview(response));
+      contracts.forEach((contract) => {
+        dispatch(fetchOverview(contract));
+        dispatch(fetchBaseToken(contract));
+      });
     };
-
+    dispatch(setSelectedAddress(0));
     fetchInfo();
   }, []);
 
   useEffect(() => {
     if (!account.address) return;
-    const fetchUserInfo = async () => {
-      const response = await interactContractUSDC.methods.userInfo(account.address).call();
-      setUserInfo(response);
-    };
-
-    fetchUserInfo();
+    contracts.forEach((contract) => {
+      dispatch(fetchUserInfo(contract));
+    });
   }, [account.address]);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = async (event, newValue) => {
     setValue(newValue);
+
+    dispatch(setSelectedAddress(newValue));
   };
 
-  const handleDeposit = () => {
+  const connectWallet = async () => {
+    dispatch(fetchUser());
+  };
+
+  const showHistory = () => {
     dispatch(
       openModal({
-        modalType: ModalTypes.DEPOSIT_MODAL,
+        modalType: ModalTypes.HISTORY_MODAL,
       }),
     );
   };
-
-  const handleWithdraw = () => {
-    dispatch(
-      openModal({
-        modalType: ModalTypes.WITHDRAW_MODAL,
-      }),
-    );
-  };
-
-  // const percent =
-  //   !_.isEmpty(userInfo) && parseFloat(userInfo.usdValue !== 0 && userInfo.tokenBalance !== 0
-  //     ? parseFloat(userInfo.usdValue) / parseFloat(userInfo.tokenBalance) - 1
-  //     : 0;
-
-  // const isGreen = !_.isEmpty(userInfo) ? percent > 0 : false;
-
   return (
-    <div className="flex gap-4">
-      <div className="w-2/12">
-        <div className="block mb-2 text-lg text-white">Active Pools</div>
-        <Tabs
-          orientation="vertical"
-          centered={false}
-          value={value}
-          onChange={handleChange}
-          variant="fullWidth"
-          aria-label="Vertical tabs example"
-          sx={{ borderRight: 1, borderColor: 'divider' }}
-        >
-          <Tab label={contractOverview.fundName} />
-        </Tabs>
-      </div>
-      <div className="w-10/12">
-        <TabPanel value={value} index={0}>
-          <div className="flex justify-end">
-            <ButtonBase
-              component="button"
-              className="relative text-white bg-main-100 hover:bg-main-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0"
-            >
-              Rebalance Pool
-            </ButtonBase>
-          </div>
-
-          <div className="flex flex-col my-6 ">
-            <div className="text-lg text-white mb-3 font-bold">Tokens Pool</div>
-            <Table />
-          </div>
-          <LineBreak />
-          <div>
-            <div className=" text-white mb-3 font-bold text-lg">About</div>
-
-            <div className="flex items-center my-3">
-              <div className="w-52 text-gray-300 mr-3">Total value:</div>
-              <div className=" text-white font-bold">
-                {currency(contractOverview.tokenSupply / 10 ** fundDecimals, {
-                  symbol: '',
-                  precision: 6,
-                }).format()}{' '}
-                <span className="text-sm text-gray-400">
-                  ({' '}
-                  {currency(contractOverview.usdValue / 10 ** usdcDecimals, {
-                    precision: 6,
-                  }).format()}
-                  )
-                </span>
-              </div>
-            </div>
-          </div>
-          {account.address && (
-            <>
-              <LineBreak />
+    <>
+      <Tabs
+        orientation="horizontal"
+        centered
+        value={value}
+        onChange={handleChange}
+        aria-label="Vertical tabs example"
+        sx={{ borderRight: 1, borderColor: 'divider' }}
+      >
+        {Object.values(contractOverviews).map((contractOverview) => (
+          <Tab label={contractOverview.fundName} key={contractOverview.fundName} />
+        ))}
+      </Tabs>
+      {Object.values(contractOverviews).map((contractOverview, index) => (
+        <TabPanel value={value} index={index}>
+          <div className="flex gap-10">
+            <div className="w-4/12">
               <div>
-                <div className=" text-white mb-3 font-bold">Your Locked</div>
+                <div className=" text-white mb-3 font-bold text-lg">Overview</div>
 
                 <div className="flex items-center my-3">
                   <div className="w-52 text-gray-300 mr-3">Total value:</div>
                   <div className=" text-white font-bold">
-                    {currency(userInfo.tokenBalance / 10 ** fundDecimals, {
+                    {currency(fromWei(ethers.BigNumber.from(contractOverview.tokenSupply).toString()), {
                       symbol: '',
                       precision: 6,
                     }).format()}{' '}
+                  </div>
+                </div>
+                <div className="flex items-center my-3">
+                  <div className="w-52 text-gray-300 mr-3">USD value:</div>
+                  <div className=" text-white font-bold">
                     <span className="text-sm text-gray-400">
-                      ({' '}
-                      {currency(userInfo.usdValue / 10 ** usdcDecimals, {
+                      {currency(fromWei(ethers.BigNumber.from(contractOverview.usdValue).toString()), {
                         precision: 6,
                       }).format()}
-                      )
                     </span>
                   </div>
                 </div>
-                {/* <div className="flex items-center my-3">
-              <div className="w-52 text-gray-300 mr-3">ROI:</div>
-              <div className=" text-white font-bold">
-                <Badge type={BadgeType.SUCCESS}>{percent}%</Badge>
               </div>
-            </div> */}
+
+              {account.address && (
+                <>
+                  <LineBreak />
+                  <div>
+                    <div className=" text-white mb-3 font-bold">Your Values</div>
+
+                    <div className="flex items-center my-3">
+                      <div className="w-52 text-gray-300 mr-3">Total value:</div>
+                      <div className=" text-white font-bold">
+                        {currency(
+                          fromWei(
+                            ethers.BigNumber.from(
+                              userInfo[contractOverview.contractAddress]?.tokenBalance || 0,
+                            ).toString(),
+                          ),
+                          {
+                            symbol: '',
+                            precision: 6,
+                          },
+                        ).format()}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center my-3">
+                      <div className="w-52 text-gray-300 mr-3">USD value:</div>
+                      <div className=" text-white font-bold">
+                        <span className="text-sm text-gray-400">
+                          (
+                          {currency(
+                            fromSzabo(
+                              ethers.BigNumber.from(
+                                userInfo[contractOverview.contractAddress]?.usdValue || 0,
+                              ).toString(),
+                            ),
+                            {
+                              precision: 6,
+                            },
+                          ).format()}
+                          )
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {account.address ? (
+                <>
+                  <div>
+                    <LineBreak />
+                    <div className="flex items-center justify-between">
+                      <div className=" text-white font-bold text-lg">Deposit to {contractOverview.fundName}</div>
+                      <ViewHistoryIcon onClick={showHistory} />
+                    </div>
+
+                    <DepositComponent />
+                  </div>
+                  <div>
+                    <LineBreak />
+                    <div className=" text-white mb-3 font-bold text-lg">
+                      Withdraw tokens from {contractOverview.fundName}
+                    </div>
+                    <WithdrawComponent />
+                  </div>
+                </>
+              ) : (
+                <ButtonBase
+                  onClick={connectWallet}
+                  component="button"
+                  className="relative w-full mt-6 text-white bg-main-100 hover:bg-main-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0"
+                >
+                  Connect wallet
+                </ButtonBase>
+              )}
+            </div>
+            <div className="w-8/12">
+              <div className="flex flex-col my-6 ">
+                <div className="text-lg text-white mb-3 font-bold">Portfolio</div>
+                <Table contractOverview={contractOverview} />
               </div>
-            </>
-          )}
-
-          <LineBreak />
-
-          <div className="flex justify-end">
-            <ButtonBase
-              onClick={handleWithdraw}
-              component="button"
-              className="relative text-white border border-main-100 border-solid bg-transparent hover:bg-main-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3"
-            >
-              Withdraw
-            </ButtonBase>
-            {/* <ButtonBase
-              component="button"
-              className="relative text-white bg-main-100 hover:bg-main-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3"
-            >
-              Extend more
-            </ButtonBase> */}
-            <ButtonBase
-              onClick={handleDeposit}
-              component="button"
-              className="relative text-white bg-main-100 hover:bg-main-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3"
-            >
-              Start investing
-            </ButtonBase>
+              <Tooltip title="Only the owner of pool can rebalance">
+                <ButtonBase
+                  component="button"
+                  className="float-right opacity-75 w-40 mt-6 relative text-white bg-main-100 hover:bg-main-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-3 md:mr-0"
+                >
+                  Rebalance Pool
+                </ButtonBase>
+              </Tooltip>
+            </div>
           </div>
         </TabPanel>
-        <TabPanel value={value} index={1}>
-          <div className="block mb-2 text-lg text-white">Coming soon</div>
-        </TabPanel>
-      </div>
-    </div>
+      ))}
+    </>
   );
 };
 
