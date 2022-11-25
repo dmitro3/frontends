@@ -1,25 +1,23 @@
 import classNames from 'classnames';
+import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { TokenMaps } from 'src/constants';
 
 import Tr from './Tr';
 
-const Table = () => {
+const Table = ({ contractOverview }) => {
   const [assets, setAssets] = useState([]);
-
-  const contractOverview = useSelector((state) => state.contract.overview);
 
   useEffect(() => {
     if (contractOverview?.assets?.length > 0) {
       setAssets(
         contractOverview.assets.map((asset) => ({
-          symbol: TokenMaps[asset.token].symbol,
-          logo: TokenMaps[asset.token].logo,
-          name: TokenMaps[asset.token].name,
-          balance: asset.amount / 10 ** TokenMaps[asset.token].decimal,
+          symbol: TokenMaps[asset.token]?.symbol,
+          logo: TokenMaps[asset.token]?.logo,
+          name: TokenMaps[asset.token]?.name,
+          balance: asset.amount / 10 ** TokenMaps[asset.token]?.decimal,
           token: asset.token,
-          weight: asset.weight,
+          weight: ethers.BigNumber.from(asset.weight).toString(),
         })),
       );
     }

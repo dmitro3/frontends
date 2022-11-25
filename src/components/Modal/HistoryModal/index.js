@@ -2,6 +2,8 @@ import { ButtonBase, Dialog, DialogContent, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import classNames from 'classnames';
+import currency from 'currency.js';
 import { useDispatch } from 'react-redux';
 import CloseModalIcon from 'src/components/Icon/CloseModalIcon';
 import Table from 'src/components/Table';
@@ -39,7 +41,36 @@ const HistoryModal = () => {
             </div>
           </LocalizationProvider>
           <div className="my-4">
-            <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
+            <div className="overflow-x-auto relative">
+              <table className="text-sm text-left text-gray-400 w-full">
+                <thead className="text-xs uppercase bg-gray-700 text-gray-400">
+                  <tr>
+                    {['Date', 'Amount'].map((name) => (
+                      <th
+                        scope="col"
+                        key={name}
+                        className={classNames('py-3 px-6 whitespace-nowrap', {
+                          'text-right': name === 'Amount',
+                        })}
+                      >
+                        {name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="">
+                    <th scope="row" className="thClass">
+                      20/11/2022
+                    </th>
+                    <th scope="row" className="thClass text-right">
+                      {currency(100000).format()}
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            {/* <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left text-gray-400">
                 <thead className="text-xs  uppercase bg-gray-700 text-gray-400">
                   <tr>
@@ -83,7 +114,7 @@ const HistoryModal = () => {
                   </tr>
                 </tbody>
               </table>
-            </div>
+            </div> */}
           </div>
         </div>
       </DialogContent>

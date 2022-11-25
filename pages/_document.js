@@ -5,6 +5,7 @@ export default function Document() {
     <Html>
       <Head>
         <link rel="shortcut icon" href="/logo.png" />
+        <title>Inzen</title>
       </Head>
       <body>
         <Main />
